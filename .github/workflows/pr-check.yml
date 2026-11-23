@@ -1,6 +1,6 @@
 name: PR Check
 
-# 外部からの Pull Request に対して、自動でビルドとテストを実行する。
+# 外部からの Pull Request に対して、自動でチェックを実行する。
 on:
   pull_request_target:
     branches: [main]
@@ -10,22 +10,19 @@ permissions:
   pull-requests: write
 
 jobs:
-  build-and-test:
+  check:
     runs-on: ubuntu-latest
     steps:
-      # Pull Request 側(フォーク元)のコードをチェックアウトして実行している。
+      # Pull Request 側(フォーク元)のコードをチェックアウトしている。
       - name: Checkout PR code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm test
+      # 注意: PR 側のコードは実行しない(ビルドやテストは走らせない)。
+      # ファイルの一覧を出すだけの無害なステップ。
+      - name: List changed files
+        run: |
+          echo "PR #${{ github.event.pull_request.number }} を受け取りました"
+          echo "ファイル一覧:"
+          ls -la
